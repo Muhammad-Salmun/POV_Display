@@ -1,12 +1,14 @@
 from turtle import *
 import turtle
-import pov_dissplay_algo
+from pov_dissplay_algo import allCollisionPoints
+from cart2pol import cart2pol
 
 num_of_turtles = 30
 led = []
 position = []
 #2d coordinates (radii,angle)
-turn_on = pov_dissplay_algo.led_state_data(-5,5,10,10,num_of_turtles)
+turn_on = allCollisionPoints((15,5),(-15,5),num_of_turtles)
+
 #record all the positions of the led
 positions = []
 #all colors

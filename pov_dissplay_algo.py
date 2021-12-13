@@ -1,68 +1,67 @@
 import math
 import numpy as np
+from cart2pol import cart2pol
 
-def cart2pol(x, y):
-    rho = np.sqrt(x**2 + y**2)
-    phi = np.arctan2(y, x)
-    return(rho, phi)
+collisionPoints = []
 
-def led_state_data(x1,y1,x2,y2,num_of_leds):
+class circles:
+        def __init__(self, p, r):
+                self.p = np.array(p)
+                self.r = r
+
+class lines:
+        def __init__(self, point1, point2):
+                self.point1 = np.array(point1)
+                self.point2 = np.array(point2)
+
+
+def Collision(circle, line):
+
+        Q = circle.p            # Centre of circle
+        r = circle.r            # Radius of circle
+        P1 = line.point1        # Start of line segment
+        P2 = line.point2        # End of line segment
+        V = line.point2 - P1    # Vector along line segment
+
+                                #coefficients of quadratic equation
+        a = V.dot(V)
+        b = 2 * V.dot(P1 - Q)
+        c = P1.dot(P1) + Q.dot(Q) - 2 * P1.dot(Q) - r**2
+
+        disc = b**2 - 4 * a * c #calculating discriminant
         
-        #values for easy calc
-        X = x2 - x1
-        Y = y2 - y1
-        m = Y/X if X != 0 else 1
-        y_intercept = y1 - x1*(Y/X) if X != 0 else 0
-        a = 1 + m**2
-        b = 2*m*y_intercept
-        print(X,Y,a,b)
+        if disc < 0:                                                    #collides in 3D sapce only
+                return 0,0
 
-        data = []
-
-
-        #calculating the determinant for each radii to find the leds affected by the line
-        for i in range(num_of_leds):
-                c = y_intercept**2 - i**2
-                D = b**2 - 4*a*c
-                print('c,D is {0},{1}'.format(c,D))
+        else:
+                if disc==0:                                             #condition for one collision point                        
+                        t2 = t1 = (-b) / (2 * a)                        #to avoid error in future while checking for t2
+                        print(t1)                
                 
-                #for two roots or two intersection points
-                if D > 0:
-                        xn1 = -b-math.sqrt(D)/(2*a)
-                        xn2 = -b+math.sqrt(D)/(2*a)
+                elif disc > 0:                                          #condition for two collision point   
+                        sqrt_disc = math.sqrt(disc)
+                        t1 = (-b + sqrt_disc) / (2 * a)
+                        t2 = (-b - sqrt_disc) / (2 * a)
 
-                        yn1 = m*x1 + y_intercept
-                        yn2 = m*x2 + y_intercept
-                        
-                        print('(xn1,yn1,radius)')
-                        print(xn1,yn1,i)
-                        print(xn2,yn2)
-
-                        r1,theta1 = cart2pol(xn1,yn1)
-                        theta1 = np.rad2deg(theta1)
-                        if theta1 < 0:
-                                theta1 = 360-theta1
-                        print('radius and angle are: {0} and {1}'.format(r1,theta1))
-                        r2,theta2 = cart2pol(xn2,yn2)
-                        theta2 = np.rad2deg(theta2)
-                        if theta1 < 0:
-                                theta2 = 360-theta2
-                        print('radius and angle are: {0} and {1}'.format(r2,theta2))
-
-                        data.append((int(r1),int(theta1)))
-                        data.append((int(r2),int(theta2)))
+                if not (0 <= t1 <= 1 or 0 <= t2 <= 1):                  #conditions for collision
+                        print('does not collide')
+                        return 0,0
                 
-                #for tangential line
-                elif D == 0:
-                        xn1 = -b-math.sqrt(D)/(2*a)
-                        yn1 = i**2 - xn1**2
-                        r1,theta1 = cart2pol(xn1,yn1)
-                        theta1 = np.rad2deg(theta1)
-                        if theta1 < 0:
-                                theta1 = 360-theta1
-                        print('radius and angle are: {0} and {1}'.format(r1,theta1))                        
-                        data.append((int(r1),int(theta1)))
+                else:
+                        x1 = P1 + t1*(P2-P1)
+                        x1 = x1.tolist()                                #converts num array or vector array to list
+                        point1InCartesian = cart2pol(x1[0],x1[1])       #converts coodinates of point vector x1 to cartesian 
+                        x2 = P1 + t2*(P2-P1)
+                        x2 = x2.tolist()                                #converts num array or vector array to list
+                        point2InCartesian = cart2pol(x2[0],x2[1])       #converts coodinates of point vector x1 to cartesian
+                        print('x1 is {0} and x2 is {1}'.format(x1,x2))  
+                        return point1InCartesian,point2InCartesian
 
-        print(data)
-        return data                        
+
+def allCollisionPoints(startPoint,endPoint,numOfLeds):
+        for i in range(numOfLeds):
+                collisionPoints.append(Collision(circles((0,0),i),lines(startPoint,endPoint)))
+        print(collisionPoints)
+        return collisionPoints
+        
 
