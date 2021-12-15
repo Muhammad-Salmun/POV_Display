@@ -24,7 +24,7 @@ cart2pol uses the basic equation r(rho) = √ ( x2 + y2 ) | θ = tan-1 ( y / x )
 from numpy library 
 
 ...
-pip install numpy
+  pip install numpy
 ...
 
 makes use of arctan() function
