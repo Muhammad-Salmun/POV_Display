@@ -23,9 +23,10 @@ later the points are converted to polar using cart2pol code file
 cart2pol uses the basic equation r(rho) = √ ( x2 + y2 ) | θ = tan-1 ( y / x )
 from numpy library 
 
-...
+  
+```
   pip install numpy
-...
+```
 
 makes use of arctan() function
 the output is in radians which is converted to degrees using rad2deg()
