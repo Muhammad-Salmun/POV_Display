@@ -1,5 +1,4 @@
 import math
-from turtle import pensize
 import numpy as np
 from cart2pol import cart2pol
 
