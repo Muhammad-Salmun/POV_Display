@@ -1,8 +1,10 @@
 import math
+from turtle import pensize
 import numpy as np
 from cart2pol import cart2pol
 
-collisionPoints = []
+collisionPointsInPolar = []            #final list of coordinates in polar plane
+collisionPointsInCart = []            #final list of coordinates in cartesian plane
 
 class circles:
         def __init__(self, p, r):
@@ -17,18 +19,18 @@ class lines:
 
 def Collision(circle, line):
 
-        Q = circle.p            # Centre of circle
-        r = circle.r            # Radius of circle
-        P1 = line.point1        # Start of line segment
-        P2 = line.point2        # End of line segment
-        V = line.point2 - P1    # Vector along line segment
+        Q = circle.p                                                    # Centre of circle
+        r = circle.r                                                    # Radius of circle
+        P1 = line.point1                                                # Start of line segment
+        P2 = line.point2                                                # End of line segment
+        V = line.point2 - P1                                            # Vector along line segment
 
-                                #coefficients of quadratic equation
+        #coefficients of quadratic equation
         a = V.dot(V)
         b = 2 * V.dot(P1 - Q)
         c = P1.dot(P1) + Q.dot(Q) - 2 * P1.dot(Q) - r**2
 
-        disc = b**2 - 4 * a * c #calculating discriminant
+        disc = b**2 - 4 * a * c                                         #calculating discriminant
         
         if disc < 0:                                                    #collides in 3D sapce only
                 return 0,0
@@ -45,23 +47,31 @@ def Collision(circle, line):
 
                 if not (0 <= t1 <= 1 or 0 <= t2 <= 1):                  #conditions for collision
                         print('does not collide')
-                        return 0,0
+                        return 0
                 
                 else:
                         x1 = P1 + t1*(P2-P1)
                         x1 = x1.tolist()                                #converts num array or vector array to list
+                        collisionPointsInCart.append(x1)
                         point1InCartesian = cart2pol(x1[0],x1[1])       #converts coodinates of point vector x1 to cartesian 
+                        collisionPointsInPolar.append(point1InCartesian) 
                         x2 = P1 + t2*(P2-P1)
                         x2 = x2.tolist()                                #converts num array or vector array to list
+                        collisionPointsInCart.append(x2)
                         point2InCartesian = cart2pol(x2[0],x2[1])       #converts coodinates of point vector x1 to cartesian
-                        print('x1 is {0} and x2 is {1}'.format(x1,x2))  
-                        return point1InCartesian,point2InCartesian
+                        print('x1 is {0} and x2 is {1}'.format(x1,x2))
+                        collisionPointsInPolar.append(point2InCartesian)  
+                        return 0
 
 
-def allCollisionPoints(startPoint,endPoint,numOfLeds):
+def allCollisionPointsInPlr(startPoint,endPoint,numOfLeds):
         for i in range(numOfLeds):
-                collisionPoints.append(Collision(circles((0,0),i),lines(startPoint,endPoint)))
-        print(collisionPoints)
-        return collisionPoints
-        
+                Collision(circles((0,0),i),lines(startPoint,endPoint))
+        print(collisionPointsInPolar)
+        return collisionPointsInPolar
 
+def allCollisionPointsInCart(startPoint,endPoint,numOfLeds):
+        for i in range(numOfLeds):
+                Collision(circles((0,0),i),lines(startPoint,endPoint))
+        print(collisionPointsInCart)
+        return collisionPointsInCart
